@@ -1,15 +1,32 @@
 const ErrorResponse = require('../utils/errorResponse');
-const asyncHandler = require('../middleware/asyncHandler');
+const { asyncHandler } = require('../middleware');
 const { User } = require('../models');
 
+// SENDS A RESPONSE WITH TOKEN IN BODY AND COOKIE
 const sendTokenResponse = (user, statusCode, res) => {
   const token = user.getAuthToken();
-  res.status(statusCode).json({
-    success: true,
-    token
-  });
+
+  const options = {
+    expires: new Date(
+      Date.now + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true
+  };
+
+  if (process.env.NODE_ENV === 'production') {
+    options.secure = true;
+  }
+
+  res
+    .status(statusCode)
+    .cookie('token', token, options)
+    .json({
+      success: true,
+      token
+    });
 };
 
+// REGISTER USER
 exports.register = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
 
@@ -17,6 +34,7 @@ exports.register = asyncHandler(async (req, res, next) => {
   sendTokenResponse(user, 201, res);
 });
 
+// LOGIN
 exports.login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -36,3 +54,8 @@ exports.login = asyncHandler(async (req, res, next) => {
 
   sendTokenResponse(user, 200, res);
 });
+
+// NAME AND EMAIL UPDATE
+// exports.updateUser = asyncHandler(async (req, res, next) => {
+//   const { name, email} = req.body
+// })

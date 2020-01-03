@@ -2,8 +2,9 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const colors = require('colors');
+const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
-const errorHandler = require('./middleware/errorHandler');
+const { errorHandler } = require('./middleware');
 
 const app = express();
 
@@ -15,6 +16,8 @@ const { auth } = require('./routes');
 
 // Body parser
 app.use(express.json());
+
+app.use(cookieParser());
 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));

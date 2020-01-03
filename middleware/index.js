@@ -1,2 +1,2 @@
 exports.asyncHandler = require('./asyncHandler');
-exports.ErrorResponse = require('./errorHandler');
+exports.errorHandler = require('./errorHandler');
