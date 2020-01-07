@@ -12,7 +12,7 @@ dotenv.config({ path: './config/config.env' });
 
 connectDB();
 
-const { auth } = require('./routes');
+const { auth, users } = require('./routes');
 
 // Body parser
 app.use(express.json());
@@ -30,6 +30,7 @@ if (process.env.NODE_ENV === 'development') {
 
 // Mount routers
 app.use('/api/v1/auth', auth);
+app.use('/api/v1/users', users);
 
 app.use(errorHandler);
 
