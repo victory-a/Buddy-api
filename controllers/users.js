@@ -45,12 +45,15 @@ exports.profileImage = asyncHandler(async (req, res, next) => {
 
   file.name = `photo_${self}${path.parse(file.name).ext}`;
 
-  file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, function(err) {
+  file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async err => {
     if (err) {
       console.log(err);
       return next(new ErrorResponse(`Problem with file upload`, 500));
     }
-    res.status(200).json({ sucess: true });
+
+    await User.findByIdAndUpdate(self, { photo: file.name });
+
+    res.status(200).json({ sucess: true, data: file.name });
   });
 });
 

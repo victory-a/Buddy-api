@@ -35,6 +35,10 @@ const UserSchema = new mongoose.Schema(
       trim: true,
       maxlength: [300, 'Bio cannot be more than 300 characters']
     },
+    photo: {
+      type: String,
+      default: 'no-photo.jpg'
+    },
     posts: {
       type: mongoose.Schema.ObjectId,
       ref: 'Post'
