@@ -10,9 +10,12 @@ const searchById = (model, id) => {
 
 // Get all users
 exports.getUsers = asyncHandler(async (req, res, next) => {
-  const users = await User.find();
-
-  res.status(200).json({ success: true, data: users });
+  const users = await User.find().populate({
+    path: 'following',
+    select: 'name'
+  });
+  const count = await User.countDocuments();
+  res.status(200).json({ success: true, count, data: users });
 });
 
 // Get single user
@@ -62,4 +65,3 @@ exports.unfollow = asyncHandler(async (req, res, next) => {
   self.following.pull(userToUnfollow);
   res.status(200).json({ success: true, data: self });
 });
-

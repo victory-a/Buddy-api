@@ -48,6 +48,8 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
+/* Middleware to encrypt password when as before every save event where password 
+field is modified */
 UserSchema.pre('save', async function(next) {
   if (!this.isModified('password')) {
     next();
@@ -57,17 +59,20 @@ UserSchema.pre('save', async function(next) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
+// Checks provided password against encrypted version in DB
 UserSchema.methods.verifyPassword = async function(enteredPassword) {
   const verified = await bcrypt.compare(enteredPassword, this.password);
   return verified;
 };
 
+// Assigns an auth token to client which has a specified expiry date
 UserSchema.methods.getAuthToken = function() {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE
   });
 };
 
+// Generate a token which is sent to client and stored a hashed version in DB
 UserSchema.methods.getResetPasswordToken = function() {
   const resetToken = crypto.randomBytes(20).toString('hex');
 
@@ -80,5 +85,22 @@ UserSchema.methods.getResetPasswordToken = function() {
 
   return resetToken;
 };
+
+UserSchema.statics.deleteInvalidUser = async function(userId) {
+  this.aggregate([
+    {
+      $match: {
+        $in: [userId, '$following']
+      }
+    },
+    {
+      $pull: { following: { $in: [userId] } }
+    }
+  ]);
+};
+
+UserSchema.pre('remove', function() {
+  this.constructor.deleteInvalidUser(this._id);
+});
 
 module.exports = mongoose.model('User', UserSchema);

@@ -91,6 +91,7 @@ exports.logout = asyncHandler(async (req, res, next) => {
   });
 });
 
+// UPDATE USER PASSWORD
 exports.updatePassword = asyncHandler(async (req, res, next) => {
   const { currentPassword, newPassword } = req.body;
 
@@ -108,6 +109,7 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
   sendTokenResponse(user, 200, res);
 });
 
+// SEND A TOKEN TO PROVIDED EMAIL TO RESET PASWORD
 exports.forgotPassword = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
 
@@ -144,6 +146,7 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
   }
 });
 
+// RESET USER PASSWORD IF PROVIDEED TOKEN MATCHES THAT IN DATABASE
 exports.resetPassword = asyncHandler(async (req, res, next) => {
   const resetPasswordToken = crypto
     .createHash('sha256')
@@ -166,4 +169,10 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
   await user.save();
 
   sendTokenResponse(user, 200, res);
+});
+
+exports.deleteUser = asyncHandler(async (req, res, next) => {
+  const self = await User.findById(req.user.id);
+  await self.remove();
+  res.status(200).json({ success: true, data: {} });
 });
