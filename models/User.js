@@ -43,7 +43,7 @@ const UserSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: 'Post'
     },
-    following: [{ type: mongoose.Schema.ObjectId, ref: 'User' }],
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     resetPasswordToken: String,
     resetPasswordExpire: Date
   },
@@ -91,16 +91,10 @@ UserSchema.methods.getResetPasswordToken = function() {
 };
 
 UserSchema.statics.deleteInvalidUser = async function(userId) {
-  this.aggregate([
-    {
-      $match: {
-        $in: [userId, '$following']
-      }
-    },
-    {
-      $pull: { following: { $in: [userId] } }
-    }
-  ]);
+  await this.update(
+    { following: { $in: userId } },
+    { $pull: { following: { $in: userId } } }
+  );
 };
 
 UserSchema.pre('remove', function() {
