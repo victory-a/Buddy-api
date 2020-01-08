@@ -73,7 +73,10 @@ exports.updateDetails = asyncHandler(async (req, res, next) => {
 });
 
 exports.currentUser = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.user.id);
+  const user = await User.findById(req.user.id).populate({
+    path: 'following',
+    select: 'name'
+  });
 
   res.status(200).json({
     success: true,
@@ -176,3 +179,4 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
   await self.remove();
   res.status(200).json({ success: true, data: {} });
 });
+

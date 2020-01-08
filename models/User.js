@@ -48,7 +48,9 @@ const UserSchema = new mongoose.Schema(
     resetPasswordExpire: Date
   },
   {
-    timestamps: true
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
   }
 );
 
@@ -99,6 +101,13 @@ UserSchema.statics.deleteInvalidUser = async function(userId) {
 
 UserSchema.pre('remove', function() {
   this.constructor.deleteInvalidUser(this._id);
+});
+
+UserSchema.virtual('followers', {
+  ref: 'User',
+  localField: '_id',
+  foreignField: 'following',
+  justOne: false
 });
 
 module.exports = mongoose.model('User', UserSchema);

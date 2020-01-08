@@ -98,3 +98,9 @@ exports.unfollow = asyncHandler(async (req, res, next) => {
   self.following.pull(userToUnfollow);
   res.status(200).json({ success: true, data: self });
 });
+
+// exports.getFollowing = asyncHandler(async (req, res, next) => {
+//   const following = await User.findById(req.user.id)
+//     .select('following')
+//     .populate('name');
+// });
