@@ -103,11 +103,11 @@ UserSchema.pre('remove', function() {
   this.constructor.deleteInvalidUser(this._id);
 });
 
-UserSchema.virtual('followers', {
-  ref: 'User',
-  localField: '_id',
-  foreignField: 'following',
-  justOne: false
-});
+// UserSchema.virtual('followers', {
+//   ref: 'User',
+//   localField: '_id',
+//   foreignField: 'following',
+//   justOne: false
+// });
 
 module.exports = mongoose.model('User', UserSchema);
