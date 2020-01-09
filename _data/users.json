@@ -1,0 +1,46 @@
+[
+  {
+    "_id": "5e15fb8fe38f0a387090707b",
+    "role": "user",
+    "following": ["5e15fbdce38f0a387090707c"],
+    "name": "victory",
+    "email": "victory@gmail.com",
+    "password": "123456"
+  },
+  {
+    "_id": "5e15fbdce38f0a387090707c",
+    "role": "user",
+    "following": ["5e15fb8fe38f0a387090707b", "5e15fbf6e38f0a387090707f"],
+    "name": "john",
+    "email": "john@gmail.com",
+    "password": "123456"
+  },
+  {
+    "_id": "5e15fbe5e38f0a387090707d",
+    "role": "user",
+    "following": ["5e15fb8fe38f0a387090707b", "5e15fbdce38f0a387090707c"],
+    "name": "paschal",
+    "email": "paschal@gmail.com",
+    "password": "123456"
+  },
+  {
+    "_id": "5e15fbeee38f0a387090707e",
+    "role": "user",
+    "following": [
+      "5e15fb8fe38f0a387090707b",
+      "5e15fbdce38f0a387090707c",
+      "5e15fbe5e38f0a387090707d"
+    ],
+    "name": "kezi",
+    "email": "kezi@gmail.com",
+    "password": "123456"
+  },
+  {
+    "_id": "5e15fbf6e38f0a387090707f",
+    "role": "user",
+    "following": ["5e15fb8fe38f0a387090707b", "5e15fbe5e38f0a387090707d"],
+    "name": "udori",
+    "email": "udori@gmail.com",
+    "password": "123456"
+  }
+]
