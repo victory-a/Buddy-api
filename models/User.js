@@ -43,7 +43,6 @@ const UserSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: 'Post'
     },
-    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     resetPasswordToken: String,
     resetPasswordExpire: Date
   },
@@ -103,11 +102,14 @@ UserSchema.pre('remove', function() {
   this.constructor.deleteInvalidUser(this._id);
 });
 
-// UserSchema.virtual('followers', {
-//   ref: 'User',
-//   localField: '_id',
-//   foreignField: 'following',
-//   justOne: false
-// });
+UserSchema.virtual('followers', {
+  ref: 'Fan',
+  localField: '_id',
+  foreignField: 'followed',
+  justOne: false,
+  options: {
+    sort: { createdAt: -1 }
+  }
+});
 
 module.exports = mongoose.model('User', UserSchema);

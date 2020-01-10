@@ -175,7 +175,7 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
 });
 
 exports.deleteUser = asyncHandler(async (req, res, next) => {
-  const self = await User.findById(req.user.id);
-  await self.remove();
+  const user = await User.findById(req.user.id);
+  await user.remove();
   res.status(200).json({ success: true, data: {} });
 });

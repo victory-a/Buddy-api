@@ -1,14 +1,11 @@
 const path = require('path');
 const ErrorResponse = require('../utils/errorResponse');
 const { asyncHandler } = require('../middleware');
-const { User } = require('../models');
+const { User, Fan } = require('../models');
 
 // Get all users
 exports.getUsers = asyncHandler(async (req, res, next) => {
-  const users = await User.find().populate({
-    path: 'following',
-    select: 'name'
-  });
+  const users = await User.find();
   const count = await User.countDocuments();
 
   res.status(200).json({ success: true, count, data: users });
@@ -16,13 +13,16 @@ exports.getUsers = asyncHandler(async (req, res, next) => {
 
 // Get single user
 exports.getUser = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.params.userId);
+  const user = await User.findById(req.params.userId).populate({
+    path: 'followers',
+    select: 'follower -_id -followed'
+  });
 
   res.status(200).json({ success: true, data: user });
 });
 
 exports.profileImage = asyncHandler(async (req, res, next) => {
-  const self = req.user.id;
+  const user = req.user.id;
 
   if (!req.files) {
     return next(new ErrorResponse(`Kindly upload a file`, 400));
@@ -43,7 +43,7 @@ exports.profileImage = asyncHandler(async (req, res, next) => {
     );
   }
 
-  file.name = `photo_${self}${path.parse(file.name).ext}`;
+  file.name = `photo_${user}${path.parse(file.name).ext}`;
 
   file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async err => {
     if (err) {
@@ -51,7 +51,7 @@ exports.profileImage = asyncHandler(async (req, res, next) => {
       return next(new ErrorResponse(`Problem with file upload`, 500));
     }
 
-    await User.findByIdAndUpdate(self, { photo: file.name });
+    await User.findByIdAndUpdate(user, { photo: file.name });
 
     res.status(200).json({ sucess: true, data: file.name });
   });
@@ -65,18 +65,21 @@ exports.follow = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse(`User not found`, 404));
   }
 
-  const self = await User.findById(req.user.id);
-
-  if (self.id === req.params.requesteduser) {
+  if (req.user.id === userToFollow.id) {
     return next(new ErrorResponse(`Can't follow self`, 400));
-  } else if (self.following.includes(req.params.requesteduser)) {
+  } else if (
+    await Fan.findOne({ follower: req.user.id, followed: userToFollow.id })
+  ) {
     return next(new ErrorResponse(`Already following user`, 400));
   }
 
-  self.following.push(userToFollow);
-  await self.save();
+  const data = {
+    follower: req.user,
+    followed: userToFollow
+  };
+  await Fan.create(data);
 
-  res.status(200).json({ success: true, data: self });
+  res.status(200).json({ success: true, data });
 });
 
 // Unfollow a user
@@ -87,20 +90,16 @@ exports.unfollow = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse(`User not found`, 404));
   }
 
-  const self = await User.findById(req.user.id);
+  const user = await User.findById(req.user.id);
 
-  if (self.id === req.params.requesteduser) {
+  if (user.id === req.params.requesteduser) {
     return next(new ErrorResponse(`Can't unfollow self`, 400));
-  } else if (self.following.includes(req.params.requesteduser)) {
+  } else if (user.following.includes(req.params.requesteduser)) {
     return next(new ErrorResponse(`Currently not following user`, 400));
   }
 
-  self.following.pull(userToUnfollow);
-  res.status(200).json({ success: true, data: self });
+  user.following.pull(userToUnfollow);
+  res.status(200).json({ success: true, data: user });
 });
 
-// exports.getFollowing = asyncHandler(async (req, res, next) => {
-//   const following = await User.findById(req.user.id)
-//     .select('following')
-//     .populate('name');
-// });
+
