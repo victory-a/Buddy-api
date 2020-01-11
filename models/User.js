@@ -91,11 +91,10 @@ UserSchema.methods.getResetPasswordToken = function() {
   return resetToken;
 };
 
+// Cascade delete relationships for a deleted user
 UserSchema.statics.deleteInvalidUser = async function(userId) {
-  await this.update(
-    { following: { $in: userId } },
-    { $pull: { following: { $in: userId } } }
-  );
+  await this.model('Fan').deleteMany({ follower: userId });
+  await this.model('Fan').deleteMany({ followed: userId });
 };
 
 UserSchema.pre('remove', function() {

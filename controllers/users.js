@@ -13,11 +13,7 @@ exports.getUsers = asyncHandler(async (req, res, next) => {
 
 // Get single user
 exports.getUser = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.params.userId).populate({
-    path: 'followers',
-    select: 'follower -_id -followed'
-  });
-
+  const user = await User.findById(req.params.userId);
   res.status(200).json({ success: true, data: user });
 });
 
@@ -59,47 +55,42 @@ exports.profileImage = asyncHandler(async (req, res, next) => {
 
 // Follow a user
 exports.follow = asyncHandler(async (req, res, next) => {
+  const user = req.user.id;
   const userToFollow = await User.findById(req.params.requesteduser);
 
   if (!userToFollow) {
     return next(new ErrorResponse(`User not found`, 404));
   }
 
-  if (req.user.id === userToFollow.id) {
+  if (user === userToFollow.id) {
     return next(new ErrorResponse(`Can't follow self`, 400));
-  } else if (
-    await Fan.findOne({ follower: req.user.id, followed: userToFollow.id })
-  ) {
+  } else if (await Fan.findOne({ follower: user, followed: userToFollow.id })) {
     return next(new ErrorResponse(`Already following user`, 400));
   }
 
-  const data = {
-    follower: req.user,
+  const data = await Fan.create({
+    follower: user,
     followed: userToFollow
-  };
-  await Fan.create(data);
+  });
 
   res.status(200).json({ success: true, data });
 });
 
 // Unfollow a user
 exports.unfollow = asyncHandler(async (req, res, next) => {
-  const userToUnfollow = await User.findById(req.params.requesteduser);
+  const user = req.user.id;
 
-  if (!userToUnfollow) {
-    return next(new ErrorResponse(`User not found`, 404));
-  }
+  const isFollowingUser = await Fan.find({
+    follower: user,
+    followed: req.params.requesteduser
+  });
 
-  const user = await User.findById(req.user.id);
-
-  if (user.id === req.params.requesteduser) {
-    return next(new ErrorResponse(`Can't unfollow self`, 400));
-  } else if (user.following.includes(req.params.requesteduser)) {
+  if (!isFollowingUser) {
     return next(new ErrorResponse(`Currently not following user`, 400));
   }
 
-  user.following.pull(userToUnfollow);
-  res.status(200).json({ success: true, data: user });
-});
+  await isFollowingUser[0].remove();
 
+  res.status(200).json({ success: true, data: {} });
+});
 
