@@ -179,3 +179,4 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
   user.remove();
   res.status(200).json({ success: true, data: {} });
 });
+

@@ -94,3 +94,26 @@ exports.unfollow = asyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, data: {} });
 });
 
+exports.getUserFollowers = asyncHandler(async (req, res, next) => {
+  const followers = await Fan.find({
+    followed: req.params.requesteduser
+  }).populate({ path: 'follower', select: 'name bio photo' });
+
+  if (!followers) {
+    return next(new ErrorResponse('User currently has no followers'), 404);
+  }
+
+  res.status(200).json({ success: true, data: followers });
+});
+
+exports.getUserFollowing = asyncHandler(async (req, res, next) => {
+  const following = await Fan.find({
+    follower: req.params.requesteduser
+  }).populate({ path: 'followed', select: 'name bio photo' });
+
+  if (!following) {
+    return next(new ErrorResponse('User currently not following anyone'), 404);
+  }
+
+  res.status(200).json({ success: true, data: following });
+});
