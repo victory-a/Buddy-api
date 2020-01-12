@@ -6,9 +6,8 @@ const { User, Fan } = require('../models');
 // Get all users
 exports.getUsers = asyncHandler(async (req, res, next) => {
   const users = await User.find();
-  const count = await User.countDocuments();
 
-  res.status(200).json({ success: true, count, data: users });
+  res.status(200).json({ success: true, count: users.length, data: users });
 });
 
 // Get single user
@@ -56,7 +55,7 @@ exports.profileImage = asyncHandler(async (req, res, next) => {
 // Follow a user
 exports.follow = asyncHandler(async (req, res, next) => {
   const user = req.user.id;
-  const userToFollow = await User.findById(req.params.requesteduser);
+  const userToFollow = await User.findById(req.params.userId);
 
   if (!userToFollow) {
     return next(new ErrorResponse(`User not found`, 404));
@@ -82,7 +81,7 @@ exports.unfollow = asyncHandler(async (req, res, next) => {
 
   const isFollowingUser = await Fan.find({
     follower: user,
-    followed: req.params.requesteduser
+    followed: req.params.userId
   });
 
   if (!isFollowingUser) {
@@ -96,7 +95,7 @@ exports.unfollow = asyncHandler(async (req, res, next) => {
 
 exports.getUserFollowers = asyncHandler(async (req, res, next) => {
   const followers = await Fan.find({
-    followed: req.params.requesteduser
+    followed: req.params.userId
   }).populate({ path: 'follower', select: 'name bio photo' });
 
   if (!followers) {
@@ -108,7 +107,7 @@ exports.getUserFollowers = asyncHandler(async (req, res, next) => {
 
 exports.getUserFollowing = asyncHandler(async (req, res, next) => {
   const following = await Fan.find({
-    follower: req.params.requesteduser
+    follower: req.params.userId
   }).populate({ path: 'followed', select: 'name bio photo' });
 
   if (!following) {

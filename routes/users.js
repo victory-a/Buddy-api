@@ -15,9 +15,9 @@ const router = express.Router();
 router.get('/', getUsers);
 router.put('/photo', protect, profileImage);
 router.get('/:userId', getUser);
-router.put('/follow/:requesteduser', protect, follow);
-router.get('/:requesteduser/followers', protect, getUserFollowers);
-router.get('/:requesteduser/following', protect, getUserFollowing);
-router.put('/unfollow/:requesteduser', protect, unfollow);
+router.put('/follow/:userId', protect, follow);
+router.get('/:userId/followers', protect, getUserFollowers);
+router.get('/:userId/following', protect, getUserFollowing);
+router.put('/unfollow/:userId', protect, unfollow);
 
 module.exports = router;
