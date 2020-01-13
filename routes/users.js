@@ -8,9 +8,14 @@ const {
   getUserFollowers,
   getUserFollowing
 } = require('../controllers/users');
-const { protect } = require('../middleware/auth');
+
+const posts = require('./posts');
 
 const router = express.Router();
+
+const { protect } = require('../middleware/auth');
+
+router.use('/:userId/posts', posts);
 
 router.get('/', getUsers);
 router.put('/photo', protect, profileImage);

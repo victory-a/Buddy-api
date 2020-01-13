@@ -17,6 +17,7 @@ exports.getUser = asyncHandler(async (req, res, next) => {
 });
 
 exports.profileImage = asyncHandler(async (req, res, next) => {
+  // ADD CHECK TO ENSURE ONLY ONE FILE IS SENT TO THIS ENDPOINT
   const user = req.user.id;
 
   if (!req.files) {
@@ -40,16 +41,19 @@ exports.profileImage = asyncHandler(async (req, res, next) => {
 
   file.name = `photo_${user}${path.parse(file.name).ext}`;
 
-  file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async err => {
-    if (err) {
-      console.log(err);
-      return next(new ErrorResponse(`Problem with file upload`, 500));
+  file.mv(
+    `${process.env.PROFILE_IMAGE_UPLOAD_PATH}/${file.name}`,
+    async err => {
+      if (err) {
+        console.log(err);
+        return next(new ErrorResponse(`Problem with file upload`, 500));
+      }
+
+      await User.findByIdAndUpdate(user, { photo: file.name });
+
+      res.status(200).json({ sucess: true, data: file.name });
     }
-
-    await User.findByIdAndUpdate(user, { photo: file.name });
-
-    res.status(200).json({ sucess: true, data: file.name });
-  });
+  );
 });
 
 // Follow a user
