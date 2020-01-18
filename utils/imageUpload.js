@@ -3,7 +3,7 @@ const uuid = require('uuid/v1');
 const ErrorResponse = require('./errorResponse');
 
 const verifyFileType = (files, next) => {
-  if (files instanceof Array) {
+  if (files.multiple) {
     files.forEach(file => {
       if (!file.mimetype.startsWith('image')) {
         return next(new ErrorResponse(`Please upload an image file`, 400));
@@ -15,7 +15,7 @@ const verifyFileType = (files, next) => {
 };
 
 const verifyFileSize = (files, maxFileSize, next) => {
-  if (files instanceof Array) {
+  if (files.multiple) {
     files.forEach(file => {
       if (file.size > maxFileSize) {
         return next(
@@ -34,7 +34,7 @@ const verifyFileSize = (files, maxFileSize, next) => {
 };
 
 const renameFile = (files, userId, type) => {
-  if (files instanceof Array) {
+  if (files.multiple) {
     files.forEach(file => {
       file.name = `post_${uuid()}${path.parse(file.name).ext}`;
     });
@@ -43,10 +43,11 @@ const renameFile = (files, userId, type) => {
       ? (files.name = `post_${uuid()}${path.parse(files.name).ext}`)
       : (files.name = `profile_${userId}${path.parse(files.name).ext}`);
   }
+  return files.name;
 };
 
 const saveFile = (files, uploadPath, next) => {
-  if (files instanceof Array) {
+  if (files.multiple) {
     files.forEach(file => {
       file.mv(`${uploadPath}/${file.name}`, async err => {
         if (err) {
@@ -54,6 +55,7 @@ const saveFile = (files, uploadPath, next) => {
           return next(new ErrorResponse(`Problem with file upload`, 500));
         }
       });
+      files.names.push(file.name);
     });
   } else {
     files.mv(`${uploadPath}/${files.name}`, async err => {
@@ -61,6 +63,8 @@ const saveFile = (files, uploadPath, next) => {
         console.log(err);
         return next(new ErrorResponse(`Problem with file upload`, 500));
       }
+      files.names.push(files.name);
+      // console.log(files.names);
     });
   }
 };
@@ -82,6 +86,8 @@ const imageUpload = (files, userId, type, next) => {
   verifyFileSize(files, maxFileSize, next);
   renameFile(files, userId, type);
   saveFile(files, uploadPath, next);
+
+  return files.names.length > 1 ? files.names : files.name;
 };
 
 module.exports = imageUpload;

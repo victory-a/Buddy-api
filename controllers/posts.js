@@ -26,22 +26,27 @@ exports.getPost = asyncHandler(async (req, res, next) => {
 });
 
 exports.createPost = asyncHandler(async (req, res, next) => {
-  // add check for max 2 photos post
-  const data = {
+  const files = req.files;
+  const post = {
     text: req.body.text,
     caption: req.body.caption,
     author: req.user.id
   };
 
-  await Post.create(data);
-  // if (req.files) {
-  //   imageUpload(req.files.file, req.user.id, 'post', next);
-  // }
-  // if (req.files.file instanceof Array) {
-  //   req.files.file.forEach(file => console.log(file.name));
-  // } else {
-  //   console.log('no file');
-  // }
+  if (files) {
+    files.file.names = [];
+    if (req.files.file instanceof Array) {
+      if (req.files.file.length > 2) {
+        return next(
+          new ErrorResponse(`Max number of images per post (2) exceeded`, 400)
+        );
+      }
+      files.file.multiple = true;
+    }
+    post.images = imageUpload(files.file, req.user.id, 'post', next);
+  }
+
+  const data = await Post.create(post);
   res.status(200).json({ success: true, data });
 });
 

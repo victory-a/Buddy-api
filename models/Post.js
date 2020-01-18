@@ -13,9 +13,7 @@ const PostSchema = new mongoose.Schema({
     maxlength: [30, 'Text limit is 280 characters'],
     required: [true, 'Caption is required']
   },
-  images: {
-    type: Array
-  },
+  images: [String],
   isEdited: {
     type: Boolean,
     default: false
