@@ -1,7 +1,6 @@
 const ErrorResponse = require('../utils/errorResponse');
 const { asyncHandler } = require('../middleware');
 const { Post } = require('../models');
-const imageUpload = require('../utils/imageUpload');
 
 exports.getPosts = asyncHandler(async (req, res, next) => {
   let posts;
@@ -26,32 +25,30 @@ exports.getPost = asyncHandler(async (req, res, next) => {
 });
 
 exports.createPost = asyncHandler(async (req, res, next) => {
-  const files = req.files;
   const post = {
     text: req.body.text,
-    caption: req.body.caption,
     author: req.user.id
   };
-
-  if (files) {
-    files.file.names = [];
-    if (req.files.file instanceof Array) {
-      if (req.files.file.length > 2) {
-        return next(
-          new ErrorResponse(`Max number of images per post (2) exceeded`, 400)
-        );
-      }
-      files.file.multiple = true;
-    }
-    post.images = imageUpload(files.file, req.user.id, 'post', next);
-  }
 
   const data = await Post.create(post);
   res.status(200).json({ success: true, data });
 });
 
+exports.editPost = asyncHandler(async (req, res, next) => {
+  const post = await Post.findById(req.params.postId);
+
+  if (!post) {
+    return next(new ErrorResponse(`Post not found`, 404));
+  }
+
+  post.text = req.body.text;
+  post.isEdited = true;
+
+  const data = await post.save({ new: true, runValidators: true });
+  res.status(200).json({ success: true, data });
+});
+
 exports.deletePost = asyncHandler(async (req, res, next) => {
-  // CHECK IF THE POST CONTAINED AN IMAGE AND DELETE THE IMAGE FILE
   const post = Post.findByIdAndRemove(req.params.postId);
 
   if (!post) {
