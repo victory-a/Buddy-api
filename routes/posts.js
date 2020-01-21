@@ -5,7 +5,8 @@ const {
   getPosts,
   createPost,
   editPost,
-  deletePost
+  deletePost,
+  replyPost
 } = require('../controllers/posts');
 
 const router = express.Router({ mergeParams: true });
@@ -20,5 +21,7 @@ router
   .get(getPost)
   .put(editPost)
   .delete(protect, deletePost);
+
+router.post('/:postId/reply', protect, replyPost);
 
 module.exports = router;

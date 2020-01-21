@@ -1,6 +1,6 @@
 const ErrorResponse = require('../utils/errorResponse');
 const { asyncHandler } = require('../middleware');
-const { Post } = require('../models');
+const { Post, Reply } = require('../models');
 
 exports.getPosts = asyncHandler(async (req, res, next) => {
   let posts;
@@ -13,7 +13,7 @@ exports.getPosts = asyncHandler(async (req, res, next) => {
 });
 
 exports.getPost = asyncHandler(async (req, res, next) => {
-  const post = Post.findById(req.params.postId);
+  const post = await Post.findById(req.params.postId);
 
   if (!post) {
     return next(
@@ -58,4 +58,25 @@ exports.deletePost = asyncHandler(async (req, res, next) => {
   }
 
   res.status(200).json({ success: true, data: {} });
+});
+
+exports.replyPost = asyncHandler(async (req, res, next) => {
+  const user = req.user.id;
+  const text = req.body.text;
+
+  const originalPost = await Post.findById(req.params.postId).select('id');
+
+  if (!originalPost) {
+    return next(new ErrorResponse(`Post not found`, 404));
+  }
+
+  const reply = await Post.create({ text: text, author: user });
+
+  await Reply.create({
+    user,
+    post: originalPost.id,
+    reply: reply.id
+  });
+
+  res.status(200).json({ success: true, data: reply });
 });

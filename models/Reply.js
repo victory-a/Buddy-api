@@ -1,11 +1,15 @@
 const mongoose = require('mongoose');
 
 const ReplySchema = new mongoose.Schema({
-  post: {
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  reply: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Post'
   },
-  reply: {
+  post: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Post'
   },

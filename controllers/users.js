@@ -4,6 +4,7 @@ const { asyncHandler } = require('../middleware');
 const { User, Fan } = require('../models');
 
 // Get all users
+// AUTHORIZE FOR ADMIN ONLY
 exports.getUsers = asyncHandler(async (req, res, next) => {
   const users = await User.find();
 
