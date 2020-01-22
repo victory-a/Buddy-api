@@ -175,7 +175,6 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
 });
 
 exports.deleteUser = asyncHandler(async (req, res, next) => {
-  // ADD FUNCTIONALITY TO DELETE USER POSTS
   const user = await User.findById(req.user.id);
   user.remove();
   res.status(200).json({ success: true, data: {} });

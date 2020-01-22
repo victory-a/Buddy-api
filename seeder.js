@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 
 dotenv.config({ path: './config/config.env' });
 
-const { User, Post, Reply } = require('./models');
+const { User, Post, Reply, Like } = require('./models');
 
 mongoose.connect(process.env.MONGO_URI_LOCAL, {
   useNewUrlParser: true,
@@ -44,6 +44,7 @@ const deleteData = async () => {
     await User.deleteMany();
     await Post.deleteMany();
     await Reply.deleteMany();
+    await Like.deleteMany();
 
     console.log('Data Destroyed ...'.red.inverse);
     process.exit();

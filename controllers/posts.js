@@ -1,19 +1,19 @@
 const ErrorResponse = require('../utils/errorResponse');
 const { asyncHandler } = require('../middleware');
-const { Post, Reply } = require('../models');
+const { Post, Reply, Like, User } = require('../models');
 
 exports.getPosts = asyncHandler(async (req, res, next) => {
   let posts;
 
   req.params.userId
-    ? (posts = await Post.find({ author: req.params.userId }))
-    : (posts = await Post.find({ author: req.user.id }));
+    ? (posts = await Post.find({ author: req.params.userId }).populate('likes'))
+    : (posts = await Post.find({ author: req.user.id }).populate('likes'));
 
   res.status(200).json({ status: true, count: posts.length, data: posts });
 });
 
 exports.getPost = asyncHandler(async (req, res, next) => {
-  const post = await Post.findById(req.params.postId);
+  const post = await Post.findById(req.params.postId).populate('likes');
 
   if (!post) {
     return next(
@@ -97,26 +97,48 @@ exports.getReplies = asyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, data: replies });
 });
 
-// exports.likePost = asyncHandler(async (req, res, next) => {
-//   const { postId } = req.params;
+exports.likePost = asyncHandler(async (req, res, next) => {
+  const post = await Post.findById(req.params.postId);
 
-//   const update = await Post.findByIdAndUpdate(
-//     postId,
-//     { $inc: { likes: 1 } },
-//     { new: true, runValidators: true }
-//   );
+  if (!post) {
+    return next(new ErrorResponse(`Invalid post`, 404));
+  }
 
-//   res.status(200).json({ success: true, data: update });
-// });
+  await Like.create({
+    post: post.id,
+    author: post.author,
+    liker: req.user.id
+  });
 
-// exports.unlikePost = asyncHandler(async (req, res, next) => {
-//   const { postId } = req.params;
+  res.status(200).json({ success: true, data: {} });
+});
 
-//   const update = await Post.findByIdAndUpdate(
-//     postId,
-//     { $inc: { likes: -1 } },
-//     { new: true, runValidators: true }
-//   );
+exports.unlikePost = asyncHandler(async (req, res, next) => {
+  const post = await Post.findById(req.params.postId);
 
-//   res.status(200).json({ success: true, data: update });
-// });
+  if (!post) {
+    return next(new ErrorResponse(`Invalid post`, 404));
+  }
+
+  const liked = await Like.findOne({
+    post: req.params.postId,
+    liker: req.user.id
+  });
+
+  if (!liked) {
+    return next(new ErrorResponse(`You have not liked this post`, 400));
+  }
+
+  await liked.remove();
+  res.status(200).json({ success: true, data: {} });
+});
+
+exports.getLikedPosts = asyncHandler(async (req, res, next) => {
+  const likedPosts = await Like.find({ liker: req.params.userId }).populate(
+    'post'
+  );
+
+  res
+    .status(200)
+    .json({ success: true, count: likedPosts.length, data: likedPosts });
+});

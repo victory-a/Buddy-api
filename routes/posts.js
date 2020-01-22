@@ -7,25 +7,31 @@ const {
   editPost,
   deletePost,
   replyPost,
-  getReplies
+  getReplies,
+  likePost,
+  unlikePost
 } = require('../controllers/posts');
 
 const router = express.Router({ mergeParams: true });
 
+router.use(protect);
 router
   .route('/')
-  .get(protect, getPosts)
-  .post(protect, createPost);
+  .get(getPosts)
+  .post(createPost);
 
 router
   .route('/:postId')
   .get(getPost)
   .put(editPost)
-  .delete(protect, deletePost);
+  .delete(deletePost);
 
 router
   .route('/:postId/reply')
-  .get(protect, getReplies)
-  .post(protect, replyPost);
+  .get(getReplies)
+  .post(replyPost);
+
+router.put('/like/:postId', likePost);
+router.put('/unlike/:postId', unlikePost);
 
 module.exports = router;
