@@ -18,11 +18,23 @@ const PostSchema = new mongoose.Schema({
   },
   likes: {
     type: Number,
-    default: 0
+    default: 0,
+    min: 0
   },
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
+
+PostSchema.statics.removeRelatedPosts = async function(postId) {
+  await this.model('Reply').deleteMany({ post: postId });
+};
+
+PostSchema.pre('remove', async function(next) {
+  console.log(`${this} post is being deleted`.red);
+  this.constructor.removeRelatedPosts(this._id);
+  next();
+});
+
 module.exports = mongoose.model('Post', PostSchema);

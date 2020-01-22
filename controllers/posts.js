@@ -49,7 +49,7 @@ exports.editPost = asyncHandler(async (req, res, next) => {
 });
 
 exports.deletePost = asyncHandler(async (req, res, next) => {
-  const post = Post.findByIdAndRemove(req.params.postId);
+  const post = await Post.findById(req.params.postId);
 
   if (!post) {
     return next(
@@ -57,6 +57,13 @@ exports.deletePost = asyncHandler(async (req, res, next) => {
     );
   }
 
+  if (post.author.toString() !== req.user.id) {
+    return next(
+      new ErrorResponse(`Not authorized to carry out this action`, 403)
+    );
+  }
+
+  post.remove();
   res.status(200).json({ success: true, data: {} });
 });
 
@@ -89,3 +96,27 @@ exports.getReplies = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ success: true, data: replies });
 });
+
+// exports.likePost = asyncHandler(async (req, res, next) => {
+//   const { postId } = req.params;
+
+//   const update = await Post.findByIdAndUpdate(
+//     postId,
+//     { $inc: { likes: 1 } },
+//     { new: true, runValidators: true }
+//   );
+
+//   res.status(200).json({ success: true, data: update });
+// });
+
+// exports.unlikePost = asyncHandler(async (req, res, next) => {
+//   const { postId } = req.params;
+
+//   const update = await Post.findByIdAndUpdate(
+//     postId,
+//     { $inc: { likes: -1 } },
+//     { new: true, runValidators: true }
+//   );
+
+//   res.status(200).json({ success: true, data: update });
+// });
