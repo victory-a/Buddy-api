@@ -12,7 +12,7 @@ const {
   unlikePost
 } = require('../controllers/posts');
 
-const router = express.Router({ mergeParams: true });
+const router = express.Router();
 
 router.use(protect);
 router
@@ -20,7 +20,11 @@ router
   .get(getPosts)
   .post(createPost);
 
+router.get('/user/:userId', getPosts);
+
 router
+  .get('/posts', getPosts)
+
   .route('/:postId')
   .get(getPost)
   .put(editPost)

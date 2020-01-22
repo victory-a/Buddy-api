@@ -11,13 +11,9 @@ const {
 
 const { getLikedPosts } = require('../controllers/posts');
 
-const posts = require('./posts');
-
 const router = express.Router();
 
 const { protect } = require('../middleware/auth');
-
-router.use('/:userId/posts', posts);
 
 router.get('/', getUsers);
 router.get('/:userId/liked', getLikedPosts);

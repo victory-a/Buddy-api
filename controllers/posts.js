@@ -7,7 +7,7 @@ exports.getPosts = asyncHandler(async (req, res, next) => {
 
   req.params.userId
     ? (posts = await Post.find({ author: req.params.userId }).populate('likes'))
-    : (posts = await Post.find({ author: req.user.id }).populate('likes'));
+    : (posts = await Post.find().populate('likes'));
 
   res.status(200).json({ status: true, count: posts.length, data: posts });
 });
