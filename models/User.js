@@ -96,7 +96,8 @@ UserSchema.statics.deleteInvalidUser = async function(userId) {
   await this.model('Fan').deleteMany({ follower: userId });
   await this.model('Fan').deleteMany({ followed: userId });
   await this.model('Post').deleteMany({ author: userId });
-  await this.model('Reply').deleteMany({ user: userId });
+  await this.model('Reply').deleteMany({ author: userId });
+  await this.model('Reply').deleteMany({ replier: userId });
 };
 
 UserSchema.pre('remove', function() {

@@ -6,14 +6,15 @@ const {
   createPost,
   editPost,
   deletePost,
-  replyPost
+  replyPost,
+  getReplies
 } = require('../controllers/posts');
 
 const router = express.Router({ mergeParams: true });
 
 router
   .route('/')
-  .get(getPosts)
+  .get(protect, getPosts)
   .post(protect, createPost);
 
 router
@@ -22,6 +23,9 @@ router
   .put(editPost)
   .delete(protect, deletePost);
 
-router.post('/:postId/reply', protect, replyPost);
+router
+  .route('/:postId/reply')
+  .get(protect, getReplies)
+  .post(protect, replyPost);
 
 module.exports = router;

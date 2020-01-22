@@ -7,7 +7,7 @@ exports.getPosts = asyncHandler(async (req, res, next) => {
 
   req.params.userId
     ? (posts = await Post.find({ author: req.params.userId }))
-    : (posts = await Post.find());
+    : (posts = await Post.find({ author: req.user.id }));
 
   res.status(200).json({ status: true, count: posts.length, data: posts });
 });
@@ -73,10 +73,19 @@ exports.replyPost = asyncHandler(async (req, res, next) => {
   const reply = await Post.create({ text: text, author: user });
 
   await Reply.create({
-    user,
+    author: originalPost.author,
+    replier: user,
     post: originalPost.id,
     reply: reply.id
   });
 
   res.status(200).json({ success: true, data: reply });
+});
+
+exports.getReplies = asyncHandler(async (req, res, next) => {
+  const post = req.params.postId;
+
+  const replies = await Reply.find({ post }).populate('reply');
+
+  res.status(200).json({ success: true, data: replies });
 });

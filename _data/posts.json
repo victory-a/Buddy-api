@@ -1,0 +1,57 @@
+[
+  {
+    "_id": "5e2731223b401320305496eb",
+    "text": "Hi i'm victory",
+    "author": "5e15fb8fe38f0a387090707b"
+  },
+  {
+    "_id": "5e2732b6c337321fccc4106a",
+    "text": "Hi i'm john",
+    "author": "5e15fbdce38f0a387090707c"
+  },
+  {
+    "_id": "5e2732cf775a762f340b664b",
+    "text": "Hi i'm paschal",
+    "author": "5e15fbe5e38f0a387090707d"
+  },
+  {
+    "_id": "5e2732d4775a762f340b664c",
+    "text": "Hi i'm kezi",
+    "author": "5e15fbeee38f0a387090707e"
+  },
+  {
+    "_id": "5e2732d5775a762f340b664d",
+    "text": "Hi i'm udori",
+    "author": "5e15fbf6e38f0a387090707f"
+  },
+  {
+    "_id": "5e2737feb6cf663658f0124f",
+    "text": "Hello John, I'm victory",
+    "author": "5e15fb8fe38f0a387090707b"
+  },
+  {
+    "_id": "5e27380eb6cf663658f01250",
+    "text": "Hello Paschal, I'm victory",
+    "author": "5e15fb8fe38f0a387090707b"
+  },
+  {
+    "_id": "5e273815b6cf663658f01251",
+    "text": "Hello kezi, I'm victory",
+    "author": "5e15fb8fe38f0a387090707b"
+  },
+  {
+    "_id": "5e273c29e65e2816ec887275",
+    "text": "Hello udori, I'm john",
+    "author": "5e15fbdce38f0a387090707c"
+  },
+  {
+    "_id": "5e273c39e65e2816ec887276",
+    "text": "Hello paschal, I'm john",
+    "author": "5e15fbdce38f0a387090707c"
+  },
+  {
+    "_id": "5e273c4de65e2816ec887277",
+    "text": "Hello kezi, I'm john",
+    "author": "5e15fbdce38f0a387090707c"
+  }
+]

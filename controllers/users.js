@@ -18,8 +18,11 @@ exports.getUser = asyncHandler(async (req, res, next) => {
 });
 
 exports.profileImage = asyncHandler(async (req, res, next) => {
-  // ADD CHECK TO ENSURE ONLY ONE FILE IS SENT TO THIS ENDPOINT
   const user = req.user.id;
+
+  if (req.files.file instanceof Array) {
+    return next(new ErrorResponse(`Choose one uimage file`, 400));
+  }
 
   if (!req.files) {
     return next(new ErrorResponse(`Kindly upload a file`, 400));
