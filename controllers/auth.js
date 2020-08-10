@@ -30,9 +30,9 @@ const sendTokenResponse = (user, statusCode, res) => {
 
 // REGISTER USER
 exports.register = asyncHandler(async (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { firstName, lastName, email, password } = req.body;
 
-  const user = await User.create({ name, email, password });
+  const user = await User.create({ firstName, lastName, email, password });
   sendTokenResponse(user, 201, res);
 });
 
@@ -45,6 +45,7 @@ exports.login = asyncHandler(async (req, res, next) => {
   }
 
   const user = await User.findOne({ email }).select('+password');
+  console.log(user);
 
   if (!user) {
     return next(new ErrorResponse(`Invalid credentials`, 401));
@@ -60,7 +61,8 @@ exports.login = asyncHandler(async (req, res, next) => {
 // NAME AND EMAIL UPDATE
 exports.updateDetails = asyncHandler(async (req, res, next) => {
   const fields = {
-    name: req.body.name,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
     email: req.body.email
   };
 
@@ -75,7 +77,7 @@ exports.updateDetails = asyncHandler(async (req, res, next) => {
 exports.currentUser = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user.id).populate({
     path: 'following',
-    select: 'name'
+    select: 'firstName lastName'
   });
 
   res.status(200).json({

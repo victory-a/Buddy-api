@@ -10,10 +10,15 @@ const UserSchema = new mongoose.Schema(
       enum: ['user'],
       default: 'user'
     },
-    name: {
+    firstName: {
       type: String,
       trim: true,
-      required: [true, 'Please provide a name']
+      required: [true, 'Please provide a firstName']
+    },
+    lastName: {
+      type: String,
+      trim: true,
+      required: [true, 'Please provide a lastName']
     },
     email: {
       type: String,
