@@ -153,6 +153,15 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 
 // RESET USER PASSWORD IF PROVIDEED TOKEN MATCHES THAT IN DATABASE
 exports.resetPassword = asyncHandler(async (req, res, next) => {
+  const { newPassword, confirmPassword } = req.body;
+  if (!newPassword && !confirmPassword) {
+    return next(
+      new ErrorResponse('New password and confirm password required', 400)
+    );
+  } else if (newPassword !== confirmPassword) {
+    return next(new ErrorResponse('Password mismatch', 400));
+  }
+
   const resetPasswordToken = crypto
     .createHash('sha256')
     .update(req.params.resettoken)
@@ -168,7 +177,7 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Invalid token', 400));
   }
 
-  user.password = req.body.password;
+  user.password = newPassword;
   user.resetPasswordToken = undefined;
   user.resetPasswordExpire = undefined;
   await user.save();

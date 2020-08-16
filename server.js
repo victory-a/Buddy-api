@@ -1,4 +1,5 @@
 const path = require('path');
+const cors = require('cors');
 const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
@@ -18,6 +19,8 @@ const { auth, users, posts } = require('./routes');
 
 // Body parser
 app.use(express.json());
+
+app.use(cors());
 
 app.use(cookieParser());
 
