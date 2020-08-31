@@ -43,7 +43,7 @@ const UserSchema = new mongoose.Schema(
     bio: {
       type: String,
       trim: true,
-      maxlength: [160, 'Bio cannot be more than 120 characters']
+      maxlength: [160, 'Bio should not be more than 120 characters']
     },
     posts: {
       type: mongoose.Schema.ObjectId,
