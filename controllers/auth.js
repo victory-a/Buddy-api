@@ -45,7 +45,6 @@ exports.login = asyncHandler(async (req, res, next) => {
   }
 
   const user = await User.findOne({ email }).select('+password');
-  console.log(user);
 
   if (!user) {
     return next(new ErrorResponse(`Invalid credentials`, 401));
@@ -63,7 +62,9 @@ exports.updateDetails = asyncHandler(async (req, res, next) => {
   const fields = {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
-    email: req.body.email
+    email: req.body.email,
+    gender: req.body.gender,
+    bio: req.body.bio,
   };
 
   const user = await User.findByIdAndUpdate(req.user.id, fields, {
@@ -121,14 +122,11 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
   if (!user) {
     return next(new ErrorResponse(`There is no user with that email`, 404));
   }
-
   const resetToken = user.getResetPasswordToken();
-  const resetUrl = `${req.protocol}://${req.get(
-    'host'
-  )}/api/v1/auth/resetpassword/${resetToken}`;
+  const resetUrl = `${req.get('Origin')}/reset-password/${resetToken}`;
 
   const message = `You are receiving this email because you (or someone else) has requested
-  the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`;
+  the reset of a password. Click on this link to reset your password: \n\n ${resetUrl} \n\n Kindly ignore this message if you didn't initiate a password reset`;
 
   try {
     await sendEmail({

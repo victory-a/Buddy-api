@@ -1,13 +1,27 @@
 const mongoose = require('mongoose');
 
-module.exports = async () => {
-  const conn = await mongoose.connect(process.env.MONGO_URI_CLOUD, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true
-  });
-  console.log(
-    `DB connected successfully on ${conn.connection.host}`.green.underline
-  );
+// mongoose.set('bufferCommands', false);
+module.exports = async function() {
+  try {
+    return await mongoose.connect(process.env.MONGO_URI_CLOUD, {
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useFindAndModify: false,
+      useUnifiedTopology: true
+    });
+  } catch (error) {
+    console.log(`Error occured ${error}`.red.underline);
+  }
 };
+
+const db = mongoose.connection;
+
+db.on('connected', function() {
+  console.log(`DB connected successfully on ${db.host}`.green.underline);
+});
+db.on('disconnected', function() {
+  console.log(`Mongoose disconnected`.red.underline);
+});
+db.on('error', function(err) {
+  console.log(`Error occured ${err}`.red.underline);
+});

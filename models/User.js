@@ -20,6 +20,11 @@ const UserSchema = new mongoose.Schema(
       trim: true,
       required: [true, 'Please provide a lastName']
     },
+    gender: {
+      type: String,
+      trim: true,
+      enum: ['male', 'female']
+    },
     email: {
       type: String,
       unique: true,
@@ -38,11 +43,7 @@ const UserSchema = new mongoose.Schema(
     bio: {
       type: String,
       trim: true,
-      maxlength: [300, 'Bio cannot be more than 300 characters']
-    },
-    photo: {
-      type: String,
-      default: 'no-photo.jpg'
+      maxlength: [160, 'Bio cannot be more than 120 characters']
     },
     posts: {
       type: mongoose.Schema.ObjectId,

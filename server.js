@@ -46,7 +46,7 @@ const server = app.listen(
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
 );
 
-// Handle global unhandled promise rejections
+// Handle global unhandled promise rejectioxns
 process.on('unhandledRejection', (err, data) => {
   console.log(`Error: ${err.message}`.red);
   server.close(() => process.exit(1));
