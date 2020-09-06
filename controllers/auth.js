@@ -59,15 +59,16 @@ exports.login = asyncHandler(async (req, res, next) => {
 
 // NAME AND EMAIL UPDATE
 exports.updateDetails = asyncHandler(async (req, res, next) => {
-  const fields = {
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    gender: req.body.gender,
-    bio: req.body.bio,
-  };
+  // const fields = {
+  //   firstName: req.body.firstName,
+  //   lastName: req.body.lastName,
+  //   email: req.body.email,
+  //   gender: req.body.gender,
+  //   bio: req.body.bio,
+  //   photo: req.body.photo
+  // };
 
-  const user = await User.findByIdAndUpdate(req.user.id, fields, {
+  const user = await User.findByIdAndUpdate(req.user.id, req.body, {
     new: true,
     runValidators: true
   });

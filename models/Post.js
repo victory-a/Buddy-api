@@ -46,4 +46,17 @@ PostSchema.virtual('likes', {
   count: true
 });
 
+PostSchema.virtual('likers', {
+  ref: 'Like',
+  localField: '_id',
+  foreignField: 'post'
+});
+
+PostSchema.virtual('replies', {
+  ref: 'Reply',
+  localField: '_id',
+  foreignField: 'post',
+  count: true
+});
+
 module.exports = mongoose.model('Post', PostSchema);
