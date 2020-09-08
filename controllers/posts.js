@@ -6,14 +6,25 @@ exports.getPosts = asyncHandler(async (req, res, next) => {
   let posts;
 
   req.params.userId
-    ? (posts = await Post.find({ author: req.params.userId }).populate('likes'))
-    : (posts = await Post.find().populate('likes'));
+    ? (posts = await Post.find({ author: req.params.userId })
+        .populate('likes')
+        .populate({ path: 'likers', select: 'firstName lastName photo' })
+        .populate({ path: 'author', select: 'firstName lastName photo' }))
+    : (posts = await Post.find()
+        .populate('likes')
+        .populate({ path: 'likers', select: 'firstName lastName photo' })
+        .populate({ path: 'author', select: 'firstName lastName photo' }));
 
-  res.status(200).json({ status: true, count: posts.length, data: posts });
+  return res
+    .status(200)
+    .json({ status: true, count: posts.length, data: posts });
 });
 
 exports.getPost = asyncHandler(async (req, res, next) => {
-  const post = await Post.findById(req.params.postId).populate('likes');
+  const post = await Post.findById(req.params.postId)
+    .populate('likes')
+    .populate('likers')
+    .populate({ path: 'author', select: 'firstName lastName photo' });
 
   if (!post) {
     return next(
@@ -21,13 +32,15 @@ exports.getPost = asyncHandler(async (req, res, next) => {
     );
   }
 
-  res.status(200).json({ success: true, data: post });
+  return res.status(200).json({ success: true, data: post });
 });
 
 exports.createPost = asyncHandler(async (req, res, next) => {
+  console.log(req.user);
   const post = {
     text: req.body.text,
-    author: req.user.id
+    author: req.body.author,
+    photo: req.user.photo
   };
 
   const data = await Post.create(post);
@@ -45,7 +58,7 @@ exports.editPost = asyncHandler(async (req, res, next) => {
   post.isEdited = true;
 
   const data = await post.save({ new: true, runValidators: true });
-  res.status(200).json({ success: true, data });
+  return res.status(200).json({ success: true, data });
 });
 
 exports.deletePost = asyncHandler(async (req, res, next) => {
@@ -64,7 +77,7 @@ exports.deletePost = asyncHandler(async (req, res, next) => {
   }
 
   post.remove();
-  res.status(200).json({ success: true, data: {} });
+  return res.status(200).json({ success: true, data: {} });
 });
 
 exports.replyPost = asyncHandler(async (req, res, next) => {
@@ -86,7 +99,7 @@ exports.replyPost = asyncHandler(async (req, res, next) => {
     reply: reply.id
   });
 
-  res.status(200).json({ success: true, data: reply });
+  return res.status(200).json({ success: true, data: reply });
 });
 
 exports.getReplies = asyncHandler(async (req, res, next) => {
@@ -94,7 +107,7 @@ exports.getReplies = asyncHandler(async (req, res, next) => {
 
   const replies = await Reply.find({ post }).populate('reply');
 
-  res.status(200).json({ success: true, data: replies });
+  return res.status(200).json({ success: true, data: replies });
 });
 
 exports.likePost = asyncHandler(async (req, res, next) => {
@@ -110,7 +123,7 @@ exports.likePost = asyncHandler(async (req, res, next) => {
     liker: req.user.id
   });
 
-  res.status(200).json({ success: true, data: {} });
+  return res.status(200).json({ success: true, data: {} });
 });
 
 exports.unlikePost = asyncHandler(async (req, res, next) => {
@@ -130,15 +143,17 @@ exports.unlikePost = asyncHandler(async (req, res, next) => {
   }
 
   await liked.remove();
-  res.status(200).json({ success: true, data: {} });
+  return res.status(200).json({ success: true, data: {} });
 });
 
 exports.getLikedPosts = asyncHandler(async (req, res, next) => {
-  const likedPosts = await Like.find({ liker: req.params.userId }).populate(
-    'post'
-  );
+  const likedPosts = await Like.find({ liker: req.params.userId })
+    .populate('post')
+    .populate('likes')
+    .populate({ path: 'author', select: 'firstName lastName photo' });
+  // .populate('author');
 
-  res
+  return res
     .status(200)
     .json({ success: true, count: likedPosts.length, data: likedPosts });
 });

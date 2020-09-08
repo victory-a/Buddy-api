@@ -17,6 +17,10 @@ const PostSchema = new mongoose.Schema(
       ref: 'User',
       required: true
     },
+    photo: {
+      type: String,
+      trim: true
+    },
     createdAt: {
       type: Date,
       default: Date.now
@@ -49,7 +53,13 @@ PostSchema.virtual('likes', {
 PostSchema.virtual('likers', {
   ref: 'Like',
   localField: '_id',
-  foreignField: 'post'
+  foreignField: 'liker'
+});
+
+PostSchema.virtual('authorDetails', {
+  ref: 'User',
+  localField: 'author',
+  foreignField: '_id'
 });
 
 PostSchema.virtual('replies', {
