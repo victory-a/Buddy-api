@@ -1,0 +1,34 @@
+[
+  {
+    "follower": "5e15fbdce38f0a387090707c",
+    "followed": "5e15fb8fe38f0a387090707b"
+  },
+  {
+    "follower": "5e15fbe5e38f0a387090707d",
+    "followed": "5e15fb8fe38f0a387090707b"
+  },
+  {
+    "follower": "5e15fbeee38f0a387090707e",
+    "followed": "5e15fb8fe38f0a387090707b"
+  },
+  {
+    "follower": "5e15fbf6e38f0a387090707f",
+    "followed": "5e15fb8fe38f0a387090707b"
+  },
+  {
+    "followed": "5e15fbdce38f0a387090707c",
+    "follower": "5e15fb8fe38f0a387090707b"
+  },
+  {
+    "followed": "5e15fbe5e38f0a387090707d",
+    "follower": "5e15fb8fe38f0a387090707b"
+  },
+  {
+    "followed": "5e15fbeee38f0a387090707e",
+    "follower": "5e15fb8fe38f0a387090707b"
+  },
+  {
+    "followed": "5e15fbf6e38f0a387090707f",
+    "follower": "5e15fb8fe38f0a387090707b"
+  }
+]

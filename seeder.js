@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 
 dotenv.config({ path: './config/config.env' });
 
-const { User, Post, Reply, Like } = require('./models');
+const { User, Post, Reply, Like, Fan } = require('./models');
 
 mongoose.connect(process.env.MONGO_URI_CLOUD, {
   useNewUrlParser: true,
@@ -26,11 +26,21 @@ const replies = JSON.parse(
   fs.readFileSync(`${__dirname}/_data/replies.json`, 'utf-8')
 );
 
+const fans = JSON.parse(
+  fs.readFileSync(`${__dirname}/_data/fans.json`, 'utf-8')
+);
+
+const likes = JSON.parse(
+  fs.readFileSync(`${__dirname}/_data/likes.json`, 'utf-8')
+);
+
 const loadData = async () => {
   try {
     await User.create(users);
     await Post.create(posts);
     await Reply.create(replies);
+    await Fan.create(fans);
+    await Like.create(likes);
 
     console.log('Data Loaded ...'.green.inverse);
     process.exit();
@@ -45,6 +55,7 @@ const deleteData = async () => {
     await Post.deleteMany();
     await Reply.deleteMany();
     await Like.deleteMany();
+    await Fan.deleteMany();
 
     console.log('Data Destroyed ...'.red.inverse);
     process.exit();

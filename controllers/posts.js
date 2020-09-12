@@ -39,7 +39,7 @@ exports.createPost = asyncHandler(async (req, res, next) => {
   console.log(req.user);
   const post = {
     text: req.body.text,
-    author: req.body.author,
+    author: req.user.id,
     photo: req.user.photo
   };
 

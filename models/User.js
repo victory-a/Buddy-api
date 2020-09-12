@@ -121,10 +121,14 @@ UserSchema.virtual('followers', {
   ref: 'Fan',
   localField: '_id',
   foreignField: 'followed',
-  justOne: false,
-  options: {
-    sort: { createdAt: -1 }
-  }
+  count: true
+});
+
+UserSchema.virtual('following', {
+  ref: 'Fan',
+  localField: '_id',
+  foreignField: 'follower',
+  count: true
 });
 
 module.exports = mongoose.model('User', UserSchema);
