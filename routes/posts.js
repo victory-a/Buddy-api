@@ -23,8 +23,7 @@ router
 router.get('/user/:userId', getPosts);
 
 router
-  .get('/posts', getPosts)
-
+  // .get('/posts', getPosts)
   .route('/:postId')
   .get(getPost)
   .put(editPost)

@@ -21,6 +21,11 @@ const errorHandler = (err, req, res, next) => {
     error = new ErrorResponse(message, 400);
   }
 
+  if (err.name === 'MongoNetworkError') {
+    const message = Object.values(err.errors).map(val => val.message);
+    error = new ErrorResponse(message, 500);
+  }
+
   res.status(error.statusCode || 500).json({
     success: false,
     error: error.message || 'Server Error'

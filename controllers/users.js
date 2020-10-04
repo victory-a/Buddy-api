@@ -54,7 +54,7 @@ exports.profileImage = asyncHandler(async (req, res, next) => {
     `${process.env.PROFILE_IMAGE_UPLOAD_PATH}/${file.name}`,
     async err => {
       if (err) {
-        console.log(err);
+        // console.log(err);
         return next(new ErrorResponse(`Problem with file upload`, 500));
       }
 
@@ -129,5 +129,3 @@ exports.getUserFollowing = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ success: true, data: following });
 });
-
-// exports.getLikesByUser = asyncHandler()

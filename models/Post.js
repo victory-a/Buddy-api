@@ -38,7 +38,7 @@ PostSchema.statics.removeRelatedPosts = async function(postId) {
 };
 
 PostSchema.pre('remove', async function(next) {
-  console.log(`${this} post is being deleted`.red);
+  // console.log(`${this} post is being deleted`.red);
   this.constructor.removeRelatedPosts(this._id);
   next();
 });
@@ -50,11 +50,18 @@ PostSchema.virtual('likes', {
   count: true
 });
 
-PostSchema.virtual('likers', {
-  ref: 'Like',
+PostSchema.virtual('replies', {
+  ref: 'Reply',
   localField: '_id',
-  foreignField: 'liker'
+  foreignField: 'post',
+  count: true
 });
+
+// PostSchema.virtual('likers', {
+//   ref: 'Like',
+//   localField: '_id',
+//   foreignField: 'liker'
+// });
 
 PostSchema.virtual('authorDetails', {
   ref: 'User',

@@ -1,6 +1,6 @@
 const ErrorResponse = require('../utils/errorResponse');
 const { asyncHandler } = require('../middleware');
-const { Post, Reply, Like, User } = require('../models');
+const { Post, Reply, Like } = require('../models');
 
 exports.getPosts = asyncHandler(async (req, res, next) => {
   let posts;
@@ -8,12 +8,14 @@ exports.getPosts = asyncHandler(async (req, res, next) => {
   req.params.userId
     ? (posts = await Post.find({ author: req.params.userId })
         .populate('likes')
-        .populate({ path: 'likers', select: 'firstName lastName photo' })
-        .populate({ path: 'author', select: 'firstName lastName photo' }))
+        .populate('replies')
+        .populate({ path: 'author', select: 'firstName lastName photo' })
+        .sort({ createdAt: -1 }))
     : (posts = await Post.find()
         .populate('likes')
-        .populate({ path: 'likers', select: 'firstName lastName photo' })
-        .populate({ path: 'author', select: 'firstName lastName photo' }));
+        .populate('replies')
+        .populate({ path: 'author', select: 'firstName lastName photo' })
+        .sort({ createdAt: -1 }));
 
   return res
     .status(200)
@@ -23,7 +25,7 @@ exports.getPosts = asyncHandler(async (req, res, next) => {
 exports.getPost = asyncHandler(async (req, res, next) => {
   const post = await Post.findById(req.params.postId)
     .populate('likes')
-    .populate('likers')
+    .populate('replies')
     .populate({ path: 'author', select: 'firstName lastName photo' });
 
   if (!post) {
@@ -36,7 +38,6 @@ exports.getPost = asyncHandler(async (req, res, next) => {
 });
 
 exports.createPost = asyncHandler(async (req, res, next) => {
-  console.log(req.user);
   const post = {
     text: req.body.text,
     author: req.user.id,
@@ -150,8 +151,8 @@ exports.getLikedPosts = asyncHandler(async (req, res, next) => {
   const likedPosts = await Like.find({ liker: req.params.userId })
     .populate('post')
     .populate('likes')
-    .populate({ path: 'author', select: 'firstName lastName photo' });
-  // .populate('author');
+    .populate({ path: 'author', select: 'firstName lastName photo' })
+    .sort({ createdAt: -1 });
 
   return res
     .status(200)
